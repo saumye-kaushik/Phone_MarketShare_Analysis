@@ -2,12 +2,13 @@
 590PR: Monte Carlo Simulation of smartphone marketshare
 Team Members: Saumye Kaushik, Shray Mishra
 
-random variables: new_inventions, service_partnership, active_countries, management_change
+random variables: new_inventions, service_partnership, active_countries
 
 Hypothesis:
-1. marketshare increases with new inventions.
-2. marketshare increases with more service partnership.
-3. Increase in revenue should cause increase in profit margin
+1. Change in Market Share of a company should be more with relatively higher number of new inventions in a given timeframe.
+2. An increase in service partnerships should have a positive impact on company’s market share.
+3. If a company sees a rise in number of countries it is active in, it should affect the market share positively. 
+
 
 
 Output Simulation:
@@ -109,12 +110,13 @@ def revenue_weight(input_df):
     revenue_score_avg = calculate_average(revenue_score_list)
     return revenue_score_avg
 
-
+# Function for calculating historical weightage
 def calculate_previous_data_weight(score_list: list) -> int:
     weighted_score = score_list[0]*40 + score_list[1]*15 + score_list[2]*15 + score_list[3]*30
     return weighted_score
 
-
+# Function for simulating service partnership, if service partnership increases it shall give the company a postive boost, if the service
+# partnership remains the same or decreases it will affect the company negatively.
 def service_partnership():
     sp = [True]
     i = 1
@@ -136,7 +138,8 @@ def service_partnership():
         sp.append(seq)
     return weight
 
-
+# Function for simulating new inventions, if new inventions are made it will have a positive impact on the company, if no new invention
+#  is made for two continuous year it will affect the company negatively.
 def new_invention():
     list_1 = []
     i = 1
@@ -160,7 +163,8 @@ def new_invention():
 
     return weight
 
-
+# Function for simulating number of countries company is active in, if company is active in more than 45 countires it will have a positive
+# impact on the company, if active country is less than 45 it will affect the company negatively.
 def active_countries():
     weight_ls = []
 
