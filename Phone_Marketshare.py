@@ -240,6 +240,31 @@ def get_company_scores(company_prev_score: float, company_name: str):
     return company_mc_score, country_count
 
 
+def yearly_marketshare(score_df: pd.DataFrame):
+    '''
+
+    :param score_df:
+    :return:
+
+    '''
+    marketshare_pc_df = pd.DataFrame()
+
+    for i in range(2018, 2024):
+        samsung_score = score_df.loc['Samsung', str(i)]
+        apple_score = score_df.loc['Apple', str(i)]
+        lg_score = score_df.loc['LG', str(i)]
+        huawei_score = score_df.loc['Huawei', str(i)]
+
+        total_score = sum(list(score_df[str(i)]))
+
+        marketshare_pc_df.loc['Samsung', i] = round(samsung_score/total_score*100, 2)
+        marketshare_pc_df.loc['Apple', i] = round(apple_score / total_score*100, 2)
+        marketshare_pc_df.loc['LG', i] = round(lg_score / total_score*100, 2)
+        marketshare_pc_df.loc['Huawei', i] = round(huawei_score/total_score*100, 2)
+
+    print(marketshare_pc_df)
+
+
 def test_weights():
     company_list = ['Samsung', 'Apple', 'LG', 'Huawei']
 
@@ -294,7 +319,7 @@ if __name__ == '__main__':
     df_score_yearly = pd.DataFrame(columns=df_score_columns)
 
     for company in company_list:
-        print(company)
+
         company_ms_score = mshare(marketshare_df[marketshare_df['Company'] == company], 5)
         company_rnd_score = rnd_weight(rndexpenditure_df[rndexpenditure_df['Company'] == company], 5)
         company_profitmargin_score = profitmargin_weight(profitmargin_df[profitmargin_df['Company'] == company], 5)
@@ -305,7 +330,6 @@ if __name__ == '__main__':
 
         df_score_yearly.loc[company, '2018'] = company_previous_score
 
-        print(company_previous_score)
         for i in range(2019, 2024):
             company_score_list = []
             company_country_list = []
@@ -317,15 +341,11 @@ if __name__ == '__main__':
             company_score_array = np.array(company_score_list)
             company_score_yearly = np.mean(company_score_array)
 
-            df_score_yearly.loc[company, i] = company_score_yearly
+            df_score_yearly.loc[company, str(i)] = round(company_score_yearly)
             '''
             company_country_array = np.array(company_country_list)
             company_country_yearly = np.mean(company_country_array)
             '''
             company_previous_score = company_score_yearly
-            print(i)
-            print(company)
-            print(company_score_yearly)
-            # print(company_country_yearly)
-        print('-'*40)
     print(df_score_yearly)
+    yearly_marketshare(df_score_yearly)
