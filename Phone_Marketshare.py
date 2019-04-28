@@ -39,9 +39,9 @@ def calculate_average(score_list: list) -> float:
 
 
 # Function for Marketshare weightage
-def mshare(input_df):
+def mshare(input_df: pd.DataFrame, num_years: int = 5):
     share_score_list = []
-    for i in range(1, 6):
+    for i in range(1, num_years+1):
         share_value = input_df.iloc[:, i].item()
         if share_value >= 20:
             mshare_score = 20
@@ -57,9 +57,9 @@ def mshare(input_df):
 
 
 # Function for R&D weightage
-def rnd_weight(input_df):
+def rnd_weight(input_df: pd.DataFrame, num_years: int = 5):
     rnd_score_list = []
-    for i in range(1, 6):
+    for i in range(1, num_years+1):
         rnd_value = input_df.iloc[:, i].item()
         if rnd_value >= 10:
             rnd_score = 20
@@ -75,9 +75,9 @@ def rnd_weight(input_df):
 
 
 # Function for profit margin weightage
-def profitmargin_weight(input_df):
+def profitmargin_weight(input_df: pd.DataFrame, num_years: int = 5):
     profitmargin_score_list = []
-    for i in range(1, 6):
+    for i in range(1, num_years+1):
         profitmargin_value = input_df.iloc[:, i].item()
         if profitmargin_value >= 40:
             profitmargin_score = 20
@@ -92,10 +92,10 @@ def profitmargin_weight(input_df):
     return profitmargin_score_avg
 
 
-#Function for Revenue weightage
-def revenue_weight(input_df):
+# Function for Revenue weightage
+def revenue_weight(input_df: pd.DataFrame, num_years: int = 5):
     revenue_score_list = []
-    for i in range(1, 6):
+    for i in range(1, num_years+1):
         revenue_value = input_df.iloc[:, i].item()
         if revenue_value >= 200:
             revenue_score = 20
@@ -126,13 +126,13 @@ def service_partnership():
         i += 1
 
         if seq and sp[-1] is False:
-            weight += 300
+            weight += 135
 
         elif seq is False and sp[-1] is False:
-            weight += -50
+            weight += -22
 
         elif seq is False and sp[-1] is True:
-            weight += -150
+            weight += -68
         sp.append(seq)
     return weight
 
@@ -150,10 +150,10 @@ def new_invention():
         if seq:
             list_1.append(False)
             i += 1
-            weight += 250
+            weight += 90
 
         elif seq is False and list_1[-1] is False:
-            weight += -250
+            weight += -90
 
         elif seq is False and list[-1] is True:
             weight += 0
@@ -161,19 +161,22 @@ def new_invention():
     return weight
 
 
-def active_countries():
+def active_countries(company_name: str):
     weight_ls = []
 
     for i in range(10):
-        act_var = random.randint(30, 60)
-        if act_var >= 45:
-            weight_ls.append(200)
+        if company_name == 'Huawei ':
+            act_var = random.randint(50, 60)
         else:
-            weight_ls.append(50)
+            act_var = random.randint(30, 60)
+        if act_var >= 45:
+            weight_ls.append(90)
+        else:
+            weight_ls.append(22)
 
         avg_weight = calculate_average(weight_ls)
 
-    return avg_weight
+    return avg_weight, act_var
 
 
 # Function for MC simulation
@@ -184,15 +187,57 @@ def calculate_yoy_weight(prev_weight_score: float = 0, ac_score: float = 0, sp_s
     return company_sim_weightage
 
 
-def get_company_scores(company_prev_score: float):
+def get_company_scores(company_prev_score: float, company_name: str):
 
-    company_ac_score = active_countries()
+    company_ac_score, country_count = active_countries(company_name)
     company_sp_score = service_partnership()
     company_ni_score = new_invention()
 
     company_mc_score = calculate_yoy_weight(company_prev_score,  company_ac_score, company_sp_score,
                                             company_ni_score)
-    return company_mc_score
+    return company_mc_score, country_count
+
+
+def test_weights():
+    company_list = ['Samsung', 'Apple', 'LG', 'Huawei']
+
+    marketshare_df = input_file('input/Marketshare.csv')
+    profitmargin_df = input_file('input/ProfitMargin.csv')
+    revenue_df = input_file('input/Revenue.csv')
+    rndexpenditure_df = input_file('input/RnDExpenditure.csv')
+
+    for company in company_list:
+        print(company)
+        company_ms_score = mshare(marketshare_df[marketshare_df['Company'] == company], 3)
+        company_rnd_score = rnd_weight(rndexpenditure_df[rndexpenditure_df['Company'] == company], 3)
+        company_profitmargin_score = profitmargin_weight(profitmargin_df[profitmargin_df['Company'] == company], 3)
+        company_revenue_score = revenue_weight(revenue_df[revenue_df['Company'] == company], 3)
+
+        previous_score_list = [company_ms_score, company_rnd_score, company_profitmargin_score, company_revenue_score]
+        company_previous_score = calculate_previous_data_weight(previous_score_list)
+        company_score_list = []
+        company_country_list = []
+        for j in range(0, 1000):
+            company_score_sim, company_country_count = get_company_scores(company_previous_score, company)
+            company_score_list.append(company_score_sim)
+            company_country_list.append(company_country_count)
+
+        company_score_array = np.array(company_score_list)
+        company_score_yearly = np.mean(company_score_array)
+
+        company_country_array = np.array(company_country_list)
+        company_country_yearly = np.mean(company_country_array)
+        print("Previous Year Score: " + str(company_previous_score))
+        print("Simulated Score: " + str(company_score_yearly))
+
+        company_ms_score = mshare(marketshare_df[marketshare_df['Company'] == company], 4)
+        company_rnd_score = rnd_weight(rndexpenditure_df[rndexpenditure_df['Company'] == company], 4)
+        company_profitmargin_score = profitmargin_weight(profitmargin_df[profitmargin_df['Company'] == company], 4)
+        company_revenue_score = revenue_weight(revenue_df[revenue_df['Company'] == company], 4)
+
+        previous_score_list = [company_ms_score, company_rnd_score, company_profitmargin_score, company_revenue_score]
+        company_next_score = calculate_previous_data_weight(previous_score_list)
+        print("Next Year Score: " + str(company_next_score))
 
 
 if __name__ == '__main__':
@@ -204,24 +249,31 @@ if __name__ == '__main__':
     rndexpenditure_df = input_file('input/RnDExpenditure.csv')
 
     for company in company_list:
-        company_ms_score = mshare(marketshare_df[marketshare_df['Company'] == company])
-        company_rnd_score = rnd_weight(rndexpenditure_df[rndexpenditure_df['Company'] == company])
-        company_profitmargin_score = profitmargin_weight(profitmargin_df[profitmargin_df['Company'] == company])
-        company_revenue_score = revenue_weight(revenue_df[revenue_df['Company'] == company])
+        print(company)
+        company_ms_score = mshare(marketshare_df[marketshare_df['Company'] == company], 5)
+        company_rnd_score = rnd_weight(rndexpenditure_df[rndexpenditure_df['Company'] == company], 5)
+        company_profitmargin_score = profitmargin_weight(profitmargin_df[profitmargin_df['Company'] == company], 5)
+        company_revenue_score = revenue_weight(revenue_df[revenue_df['Company'] == company], 5)
 
         previous_score_list = [company_ms_score, company_rnd_score, company_profitmargin_score, company_revenue_score]
         company_previous_score = calculate_previous_data_weight(previous_score_list)
 
         for i in range(5):
             company_score_list = []
+            company_country_list = []
             for j in range(0, 1000):
-                company_score_sim = get_company_scores(company_previous_score)
+                company_score_sim, company_country_count = get_company_scores(company_previous_score, company)
                 company_score_list.append(company_score_sim)
+                company_country_list.append(company_country_count)
 
             company_score_array = np.array(company_score_list)
             company_score_yearly = np.mean(company_score_array)
+
+            company_country_array = np.array(company_country_list)
+            company_country_yearly = np.mean(company_country_array)
             company_previous_score = company_score_yearly
             print(i)
             print(company)
             print(company_score_yearly)
+            print(company_country_yearly)
         print('-'*40)
