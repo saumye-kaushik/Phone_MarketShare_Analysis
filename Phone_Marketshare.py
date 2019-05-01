@@ -70,11 +70,29 @@ def input_file(file) -> pd.DataFrame:
 
 
 def calculate_average(score_list: list) -> float:
+    """
+
+    :param score_list:
+    :return:
+    >>> list_1 = [150,300,150]
+    >>> round(calculate_average(list_1))
+    200
+    """
     return sum(score_list)/len(score_list)
 
 
 # Function for Marketshare weightage
 def mshare(input_df: pd.DataFrame, num_years: int = 5):
+    """
+
+    :param input_df:
+    :param num_years:
+    :return:
+    >>> list2 = [[10,20,30,40,50,60]]
+    >>> input_df = pd.DataFrame(list2)
+    >>> mshare(input_df)
+    20.0
+    """
     share_score_list = []
     for i in range(1, num_years+1):
         share_value = input_df.iloc[:, i].item()
@@ -93,6 +111,18 @@ def mshare(input_df: pd.DataFrame, num_years: int = 5):
 
 # Function for R&D weightage
 def rnd_weight(input_df: pd.DataFrame, num_years: int = 5):
+    """
+
+    :param input_df:
+    :param num_years:
+    :return:
+
+    >>> list2 = [[10,20,30,40,50,60]]
+    >>> input_df = pd.DataFrame(list2)
+    >>> rnd_weight(input_df)
+    20.0
+
+    """
     rnd_score_list = []
     for i in range(1, num_years+1):
         rnd_value = input_df.iloc[:, i].item()
@@ -111,6 +141,17 @@ def rnd_weight(input_df: pd.DataFrame, num_years: int = 5):
 
 # Function for profit margin weightage
 def profitmargin_weight(input_df: pd.DataFrame, num_years: int = 5):
+    """
+
+    :param input_df:
+    :param num_years:
+    :return:
+
+    >>> list2 = [[10,20,30,40,50,60]]
+    >>> input_df = pd.DataFrame(list2)
+    >>> profitmargin_weight(input_df)
+    16.0
+    """
     profitmargin_score_list = []
     for i in range(1, num_years+1):
         profitmargin_value = input_df.iloc[:, i].item()
@@ -129,6 +170,17 @@ def profitmargin_weight(input_df: pd.DataFrame, num_years: int = 5):
 
 # Function for Revenue weightage
 def revenue_weight(input_df: pd.DataFrame, num_years: int = 5):
+    """
+
+    :param input_df:
+    :param num_years:
+    :return:
+
+    >>> list2 = [[10,20,30,40,50,60]]
+    >>> input_df = pd.DataFrame(list2)
+    >>> revenue_weight(input_df)
+    7.0
+    """
     revenue_score_list = []
     for i in range(1, num_years+1):
         revenue_value = input_df.iloc[:, i].item()
@@ -147,6 +199,15 @@ def revenue_weight(input_df: pd.DataFrame, num_years: int = 5):
 
 # Function for calculating historical weightage
 def calculate_previous_data_weight(score_list: list) -> int:
+    """
+
+    :param score_list:
+    :return:
+
+    >>> list1 = [30,15,10,15]
+    >>> calculate_previous_data_weight(list1)
+    2025
+    """
     weighted_score = score_list[0]*40 + score_list[1]*15 + score_list[2]*15 + score_list[3]*30
     return weighted_score
 
@@ -154,6 +215,16 @@ def calculate_previous_data_weight(score_list: list) -> int:
 # Function for simulating service partnership, if service partnership increases it shall give the company a postive
 # boost, if the service partnership remains the same or decreases it will affect the company negatively.
 def service_partnership(company_name: str, choice: int):
+    """
+
+    :param company_name:
+    :param choice:
+    :return:
+
+    >>>
+    >>>
+    >>>
+    """
     sp = [True]
     i = 1
     weight = 0
@@ -179,6 +250,12 @@ def service_partnership(company_name: str, choice: int):
 # Function for simulating new inventions, if new inventions are made it will have a positive impact on the company, if
 # no new invention is made for two continuous year it will affect the company negatively.
 def new_invention(company_name: str, choice: int):
+    """
+
+    :param company_name:
+    :param choice:
+    :return:
+    """
     list_1 = []
     i = 1
     weight = 0
@@ -208,6 +285,12 @@ def new_invention(company_name: str, choice: int):
 # Function for simulating number of countries company is active in, if company is active in more than 45 countries it
 # will have a positive impact on the company, if active country is less than 45 it will affect the company negatively.
 def active_countries(company_name: str, choice: int):
+    """
+
+    :param company_name:
+    :param choice:
+    :return:
+    """
     weight_ls = []
     selected_company = ''
 
@@ -231,12 +314,27 @@ def active_countries(company_name: str, choice: int):
 # Function for MC simulation
 def calculate_yoy_weight(prev_weight_score: float = 0, ac_score: float = 0, sp_score: float = 0,
                          ni_score: float = 0) -> float:
+    """
+
+    :param prev_weight_score:
+    :param ac_score:
+    :param sp_score:
+    :param ni_score:
+    :return:
+    """
 
     company_sim_weightage = prev_weight_score + ac_score + sp_score + ni_score
     return company_sim_weightage
 
 
 def get_company_scores(company_prev_score: float, company_name: str, choice: int):
+    """
+
+    :param company_prev_score:
+    :param company_name:
+    :param choice:
+    :return:
+    """
 
     company_ac_score, country_count = active_countries(company_name, choice)
     company_sp_score = service_partnership(company_name, choice)
@@ -288,6 +386,10 @@ def vis(dataframe):
 
 
 def test_weights():
+    """
+
+    :return:
+    """
     company_list = ['Samsung', 'Apple', 'LG', 'Huawei']
 
     marketshare_df = input_file('input/Marketshare.csv')
@@ -330,6 +432,11 @@ def test_weights():
 
 
 def marketshare_sim(choice : int):
+    """
+
+    :param choice:
+    :return:
+    """
     company_list = ['Samsung', 'Apple', 'LG', 'Huawei']
 
     marketshare_df = input_file('input/Marketshare.csv')
