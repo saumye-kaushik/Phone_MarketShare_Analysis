@@ -153,11 +153,12 @@ def calculate_previous_data_weight(score_list: list) -> int:
 
 # Function for simulating service partnership, if service partnership increases it shall give the company a postive
 # boost, if the service partnership remains the same or decreases it will affect the company negatively.
-def service_partnership():
+def service_partnership(company_name: str, choice: int):
     sp = [True]
     i = 1
     weight = 0
-
+    if choice == 3 and company_name.lower() == 'huawei':
+        return 135
     while i < 10:
         seq = bool(random.getrandbits(1))
 
@@ -177,37 +178,43 @@ def service_partnership():
 
 # Function for simulating new inventions, if new inventions are made it will have a positive impact on the company, if
 # no new invention is made for two continuous year it will affect the company negatively.
-def new_invention():
+def new_invention(company_name: str, choice: int):
     list_1 = []
     i = 1
     weight = 0
-    prob_success = mod_pert_random(0, 75, 100).item()
-    while i < 10:
-        seq = bool(random.getrandbits(1))
-        list_1.append(seq)
-        i += 1
-
-        if seq:
-            list_1.append(False)
+    if choice == 2 and company_name.lower() == 'huawei':
+        return 90
+    else:
+        prob_success = mod_pert_random(0, 75, 100).item()
+        while i < 10:
+            seq = bool(random.getrandbits(1))
+            list_1.append(seq)
             i += 1
-            weight += 0.9*prob_success
 
-        elif seq is False and list_1[-1] is False:
-            weight += -90
+            if seq:
+                list_1.append(False)
+                i += 1
+                weight += 0.9*prob_success
 
-        elif seq is False and list[-1] is True:
-            weight += 0
+            elif seq is False and list_1[-1] is False:
+                weight += -90
 
-    return weight
+            elif seq is False and list[-1] is True:
+                weight += 0
+
+        return weight
 
 
 # Function for simulating number of countries company is active in, if company is active in more than 45 countries it
 # will have a positive impact on the company, if active country is less than 45 it will affect the company negatively.
-def active_countries(company_name: str):
+def active_countries(company_name: str, choice: int):
     weight_ls = []
+    selected_company = ''
 
+    if choice == 4:
+        selected_company = 'huawei'
     for i in range(10):
-        if company_name == 'Samsung ':
+        if company_name.lower() == selected_company:
             act_var = random.randint(50, 60)
         else:
             act_var = random.randint(30, 60)
@@ -229,11 +236,11 @@ def calculate_yoy_weight(prev_weight_score: float = 0, ac_score: float = 0, sp_s
     return company_sim_weightage
 
 
-def get_company_scores(company_prev_score: float, company_name: str):
+def get_company_scores(company_prev_score: float, company_name: str, choice: int):
 
-    company_ac_score, country_count = active_countries(company_name)
-    company_sp_score = service_partnership()
-    company_ni_score = new_invention()
+    company_ac_score, country_count = active_countries(company_name, choice)
+    company_sp_score = service_partnership(company_name, choice)
+    company_ni_score = new_invention(company_name, choice)
 
     company_mc_score = calculate_yoy_weight(company_prev_score,  company_ac_score, company_sp_score,
                                             company_ni_score)
@@ -274,6 +281,9 @@ def vis(dataframe):
 
     sns.set()
     dataframe.T.plot(kind='bar', stacked=True)
+    plt.show()
+    transposed_df = dataframe.transpose()
+    transposed_df.plot.line()
     plt.show()
 
 
@@ -319,7 +329,7 @@ def test_weights():
         print("Next Year Score: " + str(company_next_score))
 
 
-if __name__ == '__main__':
+def marketshare_sim(choice : int):
     company_list = ['Samsung', 'Apple', 'LG', 'Huawei']
 
     marketshare_df = input_file('input/Marketshare.csv')
@@ -346,7 +356,7 @@ if __name__ == '__main__':
             company_score_list = []
             company_country_list = []
             for j in range(0, 1000):
-                company_score_sim, company_country_count = get_company_scores(company_previous_score, company)
+                company_score_sim, company_country_count = get_company_scores(company_previous_score, company, choice)
                 company_score_list.append(company_score_sim)
                 company_country_list.append(company_country_count)
 
@@ -354,13 +364,34 @@ if __name__ == '__main__':
             company_score_yearly = np.mean(company_score_array)
 
             df_score_yearly.loc[company, str(i)] = round(company_score_yearly)
-            '''
-            company_country_array = np.array(company_country_list)
-            company_country_yearly = np.mean(company_country_array)
-            '''
+
             company_previous_score = company_score_yearly
-    print(df_score_yearly)
     yearly_split_df = yearly_marketshare(df_score_yearly)
+    print('The Market Share simulation for the 4 companies over the next 5 years is -')
     print(yearly_split_df)
-    print((yearly_split_df.loc['Samsung']))
     vis(yearly_split_df)
+
+    if choice == 4 and company == 'Huawei':
+        company_country_array = np.array(company_country_list)
+        company_country_yearly = np.mean(company_country_array)
+        print('For year ' + str(i) + ' Number of countries for Huawei is ' + str(round(company_country_yearly)))
+
+
+if __name__ == '__main__':
+    choice = input('Enter 1 for Monte Carlo Simulation, 2 for impact of new inventions in market share, 3 for change in'
+                   ' market share for service partner fluctuation, 4 for changes in market share with active countries:'
+                   ' ')
+    choice = int(choice)
+    if choice == 1:
+        marketshare_sim(choice)
+    elif choice == 2:
+        print('Checking for Huawei with more inventions')
+        marketshare_sim(choice)
+    elif choice == 3:
+        print('Checking for Huawei with higher service partnerships')
+        marketshare_sim(choice)
+    elif choice == 4:
+        print('Checking for Huawei with higher country count')
+        marketshare_sim(choice)
+    else:
+        print('Invalid Input, please try again')
