@@ -58,7 +58,6 @@ def mod_pert_random(low, likely, high, confidence=4, samples=1):
     return beta
 
 
-# Function for reading input
 def input_file(file) -> pd.DataFrame:
     ''' This function takes input as csv file and returns a pandas data frame.
 
@@ -81,7 +80,6 @@ def calculate_average(score_list: list) -> float:
     return sum(score_list)/len(score_list)
 
 
-# Function for Marketshare weightage
 def mshare(input_df: pd.DataFrame, num_years: int = 5):
     """This function calculates the score for market share of different company based on their real market share values.
 
@@ -109,7 +107,6 @@ def mshare(input_df: pd.DataFrame, num_years: int = 5):
     return mshare_score_avg
 
 
-# Function for R&D weightage
 def rnd_weight(input_df: pd.DataFrame, num_years: int = 5):
     """This function calculates the score for research and development expenditure of different company based on
     their historical R&D expenditure.
@@ -140,7 +137,6 @@ def rnd_weight(input_df: pd.DataFrame, num_years: int = 5):
     return rnd_score_avg
 
 
-# Function for profit margin weightage
 def profitmargin_weight(input_df: pd.DataFrame, num_years: int = 5):
     """This function calculates the score for profit margins of different company based on  their historical profit
     margin data.
@@ -170,7 +166,6 @@ def profitmargin_weight(input_df: pd.DataFrame, num_years: int = 5):
     return profitmargin_score_avg
 
 
-# Function for Revenue weightage
 def revenue_weight(input_df: pd.DataFrame, num_years: int = 5):
     """This function calculates the score for revenue of different company based on their historical revenue data.
 
@@ -199,7 +194,6 @@ def revenue_weight(input_df: pd.DataFrame, num_years: int = 5):
     return revenue_score_avg
 
 
-# Function for calculating historical weightage
 def calculate_previous_data_weight(score_list: list) -> int:
     """ This function returns the score for all the four companies based on their historical input data by adding the
     values of market share, R&D expenditure, profit margin and revenue scores.
@@ -215,19 +209,20 @@ def calculate_previous_data_weight(score_list: list) -> int:
     return weighted_score
 
 
-# Function for simulating service partnership, if service partnership increases it shall give the company a postive
-# boost, if the service partnership remains the same or decreases it will affect the company negatively.
 def service_partnership(company_name: str, choice: int):
-    """ This function simulates service partnership which is a random variable and randomly changes year on year basis.
+    """
+    This function simulates service partnership which is a random variable and randomly changes year on year basis.
     The function returns the weight for the variable which will be used for further calculations.
 
     :param company_name: This is a string which gives the name of company under calculation.
     :param choice: This is an integer which gives the user the option of selecting the output simulation.
     :return: The function returns the service partnership score for the random sequence.
 
-    >>>
-    >>>
-    >>>
+    >>> service_partnership("huawei", 3)
+    135
+    >>> test_var1 = service_partnership('Samsung', 1)
+    >>> test_var1 > -266
+    True
     """
     sp = [True]
     i = 1
@@ -251,15 +246,20 @@ def service_partnership(company_name: str, choice: int):
     return weight
 
 
-# Function for simulating new inventions, if new inventions are made it will have a positive impact on the company, if
-# no new invention is made for two continuous year it will affect the company negatively.
 def new_invention(company_name: str, choice: int):
-    """This function simulates new inventions which is a random variable and randomly changes year on year basis.
+    """
+    This function simulates new inventions which is a random variable and randomly changes year on year basis.
     The function returns the weight for the variable which will be used for further calculations.
 
     :param company_name: This is a string which gives the name of company under calculation.
     :param choice: This is an integer which gives the user the option of selecting the output simulation.
     :return: The function returns the new invention score for the random sequence.
+
+    >>> new_invention("huawei", 2)
+    90
+    >>> test_var2 = new_invention('Samsung', 1)
+    >>> test_var2 <= 450
+    True
 
     """
     list_1 = []
@@ -288,15 +288,26 @@ def new_invention(company_name: str, choice: int):
         return weight
 
 
-# Function for simulating number of countries company is active in, if company is active in more than 45 countries it
-# will have a positive impact on the company, if active country is less than 45 it will affect the company negatively.
 def active_countries(company_name: str, choice: int):
-    """This function simulates countries comapny are active inwhich is a random variable and randomly changes year
+    """
+    This function simulates countries comapny are active inwhich is a random variable and randomly changes year
     on year basis. The function returns the weight for the variable which will be used for further calculations.
 
     :param company_name: This is a string which gives the name of company under calculation.
     :param choice: This is an integer which gives the user the option of selecting the output simulation.
     :return: The function returns the active countries score for the random sequence.
+
+    >>> test_var2, test_var3 = active_countries('huawei', 4)
+    >>> test_var2
+    90.0
+    >>> test_var3 >= 50
+    True
+
+    >>> test_var2, test_var3 = active_countries('samsung', 1)
+    >>> test_var2 > 22
+    True
+    >>> 60 >= test_var3 >= 30
+    True
 
     """
     weight_ls = []
@@ -319,10 +330,10 @@ def active_countries(company_name: str, choice: int):
     return avg_weight, act_var
 
 
-# Function for MC simulation
 def calculate_yoy_weight(prev_weight_score: float = 0, ac_score: float = 0, sp_score: float = 0,
                          ni_score: float = 0) -> float:
-    """ This functions calculates the final score based on historical input scores, active countries
+    """
+    This functions calculates the final score based on historical input scores, active countries
     score, service partnership score and new invention score
 
     :param prev_weight_score: float value of score for companies past five years input parameters.
@@ -330,6 +341,9 @@ def calculate_yoy_weight(prev_weight_score: float = 0, ac_score: float = 0, sp_s
     :param sp_score: float value of calculated service partnership score for the year under consideration.
     :param ni_score: float value of calculated new invention score for the year under consideration.
     :return: returns total score for the year under calculation.
+
+    >>> calculate_yoy_weight(134, 257, 358, 660)
+    1409
     """
 
     company_sim_weightage = prev_weight_score + ac_score + sp_score + ni_score
@@ -337,12 +351,19 @@ def calculate_yoy_weight(prev_weight_score: float = 0, ac_score: float = 0, sp_s
 
 
 def get_company_scores(company_prev_score: float, company_name: str, choice: int):
-    """ This function calculates the final score for each company.
+    """
+    This function calculates the final score for each company.
 
     :param company_prev_score: float value of company's previous year score.
     :param company_name: it is a string which contains the name of the company under consideration.
     :param choice: this is an integer which gives the user the option of selecting the output simulation.
     :return: the function returns the total score for the company and the count of active countries for that company.
+
+    >>> tar_var1, tar_var2 = get_company_scores (1400, 'huawei', 4)
+    >>> tar_var1 > 1400
+    True
+    >>> tar_var2 >= 50
+    True
     """
 
     company_ac_score, country_count = active_countries(company_name, choice)
@@ -354,21 +375,27 @@ def get_company_scores(company_prev_score: float, company_name: str, choice: int
     return company_mc_score, country_count
 
 
-def yearly_marketshare(score_df: pd.DataFrame):
+def yearly_marketshare(score_df: pd.DataFrame, std_df: pd.DataFrame):
     '''
-    This function calculates the marketshare percentage based on the total score of all the companies for the particular
-    year.
-    :param score_df: Dataframe containing all marketshare scores for next five years.
-    :return: Dataframe that contains the marketshare percentage for the next five years. 
+    This function calculates the market share percentage based on the total score of all the companies for the
+    particular year.
 
+    :param score_df: Data frame containing all market share scores for next five years.
+    :return: Data frame that contains the market share percentage for the next five years.
     '''
     marketshare_pc_df = pd.DataFrame()
+    marketshare_std_df = pd.DataFrame()
 
     for i in range(2018, 2024):
         samsung_score = score_df.loc['Samsung', str(i)]
         apple_score = score_df.loc['Apple', str(i)]
         lg_score = score_df.loc['LG', str(i)]
         huawei_score = score_df.loc['Huawei', str(i)]
+
+        samsung_std = std_df.loc['Samsung', str(i)]
+        apple_std = std_df.loc['Apple', str(i)]
+        lg_std = std_df.loc['LG', str(i)]
+        huawei_std = std_df.loc['Huawei', str(i)]
 
         total_score = sum(list(score_df[str(i)]))
 
@@ -377,27 +404,35 @@ def yearly_marketshare(score_df: pd.DataFrame):
         marketshare_pc_df.loc['LG', i] = round(lg_score / total_score*100, 2)
         marketshare_pc_df.loc['Huawei', i] = round(huawei_score/total_score*100, 2)
 
-    return marketshare_pc_df
+        marketshare_std_df.loc['Samsung', i] = round(samsung_std/total_score*100, 2)
+        marketshare_std_df.loc['Apple', i] = round(apple_std / total_score*100, 2)
+        marketshare_std_df.loc['LG', i] = round(lg_std / total_score*100, 2)
+        marketshare_std_df.loc['Huawei', i] = round(huawei_std/total_score*100, 2)
+
+    return marketshare_pc_df, marketshare_std_df
 
 
-def vis(dataframe):
-    ''' This function returns stacked bar graph and line graph showing final market share and its trends.
+def vis(score_dataframe: pd.DataFrame):
+    '''
+    This function returns stacked bar graph and line graph showing final market share and its trends.
 
     :param dataframe: This is an input panda data frame which contains final value for visualization.
     :return: none
     '''
 
     sns.set()
-    dataframe.T.plot(kind='bar', stacked=True)
+    score_dataframe.T.plot(kind='bar', stacked=True)
+    plt.title('Market Share Comparison of Companies Yearly')
     plt.show()
-    transposed_df = dataframe.transpose()
+    transposed_df = score_dataframe.transpose()
     transposed_df.plot.line()
+    plt.title('Market Share Trends for Companies (2018-2023)')
     plt.show()
-
 
 
 def test_weights():
-    """ This function is a test function which was created to test the historical data to adjust the weights for
+    """
+    This function is a test function which was created to test the historical data to adjust the weights for
     different parameters based on the results.
 
     :return: none
@@ -444,7 +479,8 @@ def test_weights():
 
 
 def marketshare_sim(choice : int):
-    """ The function calls other functions in the script to execute the final output of the Monte Carlo Simulation
+    """
+    The function calls other functions in the script to execute the final output of the Monte Carlo Simulation
 
     :param choice: This is an integer which gives the user the option of selecting the output simulation.
     :return: none
@@ -458,6 +494,7 @@ def marketshare_sim(choice : int):
 
     df_score_columns = ['2018']
     df_score_yearly = pd.DataFrame(columns=df_score_columns)
+    df_score_yearly_std = pd.DataFrame(columns=df_score_columns)
 
     for company in company_list:
 
@@ -470,6 +507,7 @@ def marketshare_sim(choice : int):
         company_previous_score = calculate_previous_data_weight(previous_score_list)
 
         df_score_yearly.loc[company, '2018'] = company_previous_score
+        df_score_yearly_std.loc[company, '2018'] = 0
 
         for i in range(2019, 2024):
             company_score_list = []
@@ -481,13 +519,17 @@ def marketshare_sim(choice : int):
 
             company_score_array = np.array(company_score_list)
             company_score_yearly = np.mean(company_score_array)
+            company_score_yearly_std = np.std(company_score_array)
 
             df_score_yearly.loc[company, str(i)] = round(company_score_yearly)
+            df_score_yearly_std.loc[company, str(i)] = company_score_yearly_std
 
             company_previous_score = company_score_yearly
-    yearly_split_df = yearly_marketshare(df_score_yearly)
-    print('The Market Share simulation for the 4 companies over the next 5 years is -')
-    print(yearly_split_df)
+    yearly_split_df, yearly_split_df_std = yearly_marketshare(df_score_yearly, df_score_yearly_std)
+    print('\nThe Market Share simulation for the 4 companies over the next 5 years is -')
+    print(df_score_yearly)
+    print('\nPercentage Variance in Market Share over 1000 simulations for the 4 companies over the next 5 years is -')
+    print(yearly_split_df_std)
     vis(yearly_split_df)
 
     if choice == 4 and company == 'Huawei':
