@@ -35,4 +35,4 @@ Hypothesis 1 tested : Tested Company sees the largest increase in market share w
 
 Hypothesis 2 tested : Tested Company's market share increases with more service partnerships compared to other companies.
 
-Hypothesis 3 tested : Huawei with higher number of active countries had a steepest increase in market share compared to other companies which were active in less countries.
+Hypothesis 3 tested : Huawei with higher number of active countries had the steepest increase in market share compared to other companies which were active in less countries.
