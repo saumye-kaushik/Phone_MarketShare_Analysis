@@ -1,7 +1,7 @@
 # Monte Carlo Simulation for Smartphone Market Share prediction of four companies.
 
 ## Objective
-The objective of this poster is to explore Monte Carlo Simulation in determining future “Global Smartphone Market Share” based on historical statistical trends of companies and different random factors affecting the market share.
+The objective of this project is to explore Monte Carlo Simulation in determining future “Global Smartphone Market Share” based on historical statistical trends of companies and different random factors affecting the market share.
 
 ## Description
 Our research takes into consideration four leaders in the industry which are Samsung, Apple, Huawei, and LG, based on their performance over the last five years predictions are made for the future projections.
