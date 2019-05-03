@@ -527,7 +527,7 @@ def marketshare_sim(choice : int):
             company_previous_score = company_score_yearly
     yearly_split_df, yearly_split_df_std = yearly_marketshare(df_score_yearly, df_score_yearly_std)
     print('\nThe Market Share simulation for the 4 companies over the next 5 years is -')
-    print(df_score_yearly)
+    print(yearly_split_df)
     print('\nPercentage Variance in Market Share over 1000 simulations for the 4 companies over the next 5 years is -')
     print(yearly_split_df_std)
     vis(yearly_split_df)
