@@ -356,9 +356,10 @@ def get_company_scores(company_prev_score: float, company_name: str, choice: int
 
 def yearly_marketshare(score_df: pd.DataFrame):
     '''
-
-    :param score_df:
-    :return:
+    This function calculates the marketshare percentage based on the total score of all the companies for the particular
+    year.
+    :param score_df: Dataframe containing all marketshare scores for next five years.
+    :return: Dataframe that contains the marketshare percentage for the next five years. 
 
     '''
     marketshare_pc_df = pd.DataFrame()
